@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 06ae6b2dbf940e24ca4efaecc64c5ef2
+timeCreated: 1448950033
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Dynamics/NncgConstraintSolver.cs
+  uploadId: 159347

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 5f432bff41ac1184dbdb9b28f4a32e94
+timeCreated: 1446513661
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Math/Vector4.cs
+  uploadId: 159347

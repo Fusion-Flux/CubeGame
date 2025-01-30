@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c4f5371b62ca5d54a82ac81445818a8c
+timeCreated: 1466189123
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/RealtimeSimWithOfflinePrediction/GhostBallPrefab.prefab
+  uploadId: 159347

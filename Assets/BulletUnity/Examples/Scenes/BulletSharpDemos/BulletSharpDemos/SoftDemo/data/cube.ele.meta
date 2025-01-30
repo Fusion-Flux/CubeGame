@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 65408fe39687f1b4881938f06e338723
+timeCreated: 1449172539
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/BulletSharpDemos/BulletSharpDemos/SoftDemo/data/cube.ele
+  uploadId: 159347

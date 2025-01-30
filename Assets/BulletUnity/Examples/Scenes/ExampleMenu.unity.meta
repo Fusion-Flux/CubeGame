@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: dd6c72c8f72ad81458903ed8743c21a0
+timeCreated: 1457574871
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/ExampleMenu.unity
+  uploadId: 159347

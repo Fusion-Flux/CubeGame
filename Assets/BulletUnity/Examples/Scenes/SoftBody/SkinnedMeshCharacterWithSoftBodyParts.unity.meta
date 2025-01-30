@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2bc9472373dc2c64892de2c2c5e6f2a0
+timeCreated: 1477096273
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/SoftBody/SkinnedMeshCharacterWithSoftBodyParts.unity
+  uploadId: 159347

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 508b42418ba4d944ab90c02ebf069371
+timeCreated: 1475198292
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Documentation/README-UniversalWindowsPlatform.txt
+  uploadId: 159347

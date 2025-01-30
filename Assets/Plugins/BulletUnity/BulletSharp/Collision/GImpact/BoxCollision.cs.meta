@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 0aebf9117ceba2f4985a943e1162c7ce
+timeCreated: 1455852289
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Collision/GImpact/BoxCollision.cs
+  uploadId: 159347

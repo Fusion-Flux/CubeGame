@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 86555e2983e81f147a96fe97cfd44f1c
+timeCreated: 1462987022
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Documentation/Bullet_User_Manual.pdf
+  uploadId: 159347

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: aa90d5c625ba90f438d6225599147b5b
+timeCreated: 1457573260
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/SceneMenu/Editor/UpdateScenesListMenu.cs
+  uploadId: 159347

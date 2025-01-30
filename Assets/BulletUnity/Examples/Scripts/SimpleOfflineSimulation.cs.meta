@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 59cb804fb27525e49b9daf98c48dd0a4
+timeCreated: 1466292638
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scripts/SimpleOfflineSimulation.cs
+  uploadId: 159347

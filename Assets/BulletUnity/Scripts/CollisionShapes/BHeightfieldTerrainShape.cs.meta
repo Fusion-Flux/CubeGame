@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: db9d402f411b92f45ab955e020834f4c
+timeCreated: 1457125169
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Scripts/CollisionShapes/BHeightfieldTerrainShape.cs
+  uploadId: 159347

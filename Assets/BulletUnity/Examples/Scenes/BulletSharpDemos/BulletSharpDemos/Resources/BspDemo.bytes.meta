@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ba9a1e56bbad1204e953b561ae64b537
+timeCreated: 1457118137
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/BulletSharpDemos/BulletSharpDemos/Resources/BspDemo.bytes
+  uploadId: 159347

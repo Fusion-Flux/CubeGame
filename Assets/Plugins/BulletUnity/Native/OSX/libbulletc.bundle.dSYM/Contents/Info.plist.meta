@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bbcee0dfacbb44f1d9c4f207dda2c44e
+timeCreated: 1468165109
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/Native/OSX/libbulletc.bundle.dSYM/Contents/Info.plist
+  uploadId: 159347

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 3dc7aa7239315bb41b745d890d80e1ec
+timeCreated: 1448949945
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Collision/EmptyShape.cs
+  uploadId: 159347

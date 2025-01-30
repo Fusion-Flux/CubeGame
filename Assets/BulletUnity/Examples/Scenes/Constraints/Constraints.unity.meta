@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9e748efdd52e25c45aeacea9a9471d83
+timeCreated: 1461706708
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/Constraints/Constraints.unity
+  uploadId: 159347

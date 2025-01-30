@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: f453a5854818a2146af8f7f0c9375276
+timeCreated: 1448949946
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Collision/Box2DBox2DCollisionAlgorithm.cs
+  uploadId: 159347

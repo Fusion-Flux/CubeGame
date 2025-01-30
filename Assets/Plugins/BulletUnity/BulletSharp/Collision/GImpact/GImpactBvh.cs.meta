@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 037ebe995b1c81347980b5c1e003ad4d
+timeCreated: 1455852289
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Collision/GImpact/GImpactBvh.cs
+  uploadId: 159347

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: e58d1a6771578b544bcbfc3fedac2649
+timeCreated: 1451189100
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Scripts/Primitives/BCone.cs
+  uploadId: 159347

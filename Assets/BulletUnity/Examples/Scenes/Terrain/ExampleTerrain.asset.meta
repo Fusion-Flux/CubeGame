@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 060cca6450cee364dad384591cc41a48
+timeCreated: 1457201172
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/Terrain/ExampleTerrain.asset
+  uploadId: 159347

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 13dff6ca1e84b7f45aea27d51d1366f4
+timeCreated: 1452309823
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/SoftBody/ExtendedFlycam.cs
+  uploadId: 159347

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: d348705b835d1b042b82651c5053999e
+timeCreated: 1449172539
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/BulletSharpDemos/BulletSharpDemos/SoftDemo/TorusMesh.cs
+  uploadId: 159347

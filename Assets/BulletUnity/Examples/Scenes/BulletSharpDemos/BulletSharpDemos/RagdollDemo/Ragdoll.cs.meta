@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: abfde29f8d35ddf49a698eb376ba9f73
+timeCreated: 1456955660
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Scenes/BulletSharpDemos/BulletSharpDemos/RagdollDemo/Ragdoll.cs
+  uploadId: 159347

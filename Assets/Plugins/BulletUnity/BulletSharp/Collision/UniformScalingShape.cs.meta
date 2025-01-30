@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 250e5dd17c8384746951d015c3ab6735
+timeCreated: 1448949944
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Collision/UniformScalingShape.cs
+  uploadId: 159347

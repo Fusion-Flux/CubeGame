@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: af52e21ec4947434c94d9f850a07b571
+timeCreated: 1449176341
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Examples/Prefabs/Rope.prefab
+  uploadId: 159347

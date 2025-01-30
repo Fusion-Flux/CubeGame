@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: c442573bf2b1147f09eebe9cd53b6b47
+timeCreated: 1457180052
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {fileID: 2800000, guid: 7c82d467ebfff3d4db6b8b2dcd024be2, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Scripts/Editor/BCapsuleShapeEditor.cs
+  uploadId: 159347

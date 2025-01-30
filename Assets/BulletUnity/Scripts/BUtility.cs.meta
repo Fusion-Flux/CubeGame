@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 088d7ff75ba36dc408330ba913222675
+timeCreated: 1447035966
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/BulletUnity/Scripts/BUtility.cs
+  uploadId: 159347

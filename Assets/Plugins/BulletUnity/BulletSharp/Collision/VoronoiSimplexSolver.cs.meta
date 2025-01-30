@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 6f19b6ea9b434ef46a5b490d881ccfff
+timeCreated: 1448949945
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Collision/VoronoiSimplexSolver.cs
+  uploadId: 159347

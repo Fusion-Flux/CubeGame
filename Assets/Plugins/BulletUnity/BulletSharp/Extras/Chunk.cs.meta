@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: a27656dfeab8a1e44aa38da28b15bf29
+timeCreated: 1448950067
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 62991
+  packageName: Bullet Physics For Unity
+  packageVersion: 1.1.0
+  assetPath: Assets/Plugins/BulletUnity/BulletSharp/Extras/Chunk.cs
+  uploadId: 159347
