@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -12,9 +13,6 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Force/impulse applied when jumping")]
     public float jumpForce = 7f;
 
-    [Tooltip("How far below the sphere we check for the ground")]
-    public float groundCheckDistance = 1.1f;
-    public float groundCheckDistanceForce = 1.1f;
     [Tooltip("Which layers are considered 'ground'")]
     public LayerMask groundLayer;
 
@@ -44,10 +42,14 @@ public class PlayerController : MonoBehaviour
     private float currentYaw = 0f;
     private float currentPitch = 0f;
 
-    public bool slamming = false;
-
     private Rigidbody rb;
 
+    // Tracks how many "valid ground" contacts we currently have
+    private int groundContactCount = 0;
+    // True whenever groundContactCount > 0
+    private bool isGrounded = false;
+
+    public bool slamming = false;
     // We store whether jump was requested this frame
     private bool jumpRequested = false;
 
@@ -72,7 +74,8 @@ public class PlayerController : MonoBehaviour
         currentPitch = Mathf.Clamp(currentPitch, minYAngle, maxYAngle);
 
         // --- Keyboard Input for Jump ---
-        if (Input.GetButtonDown("Jump") && IsGrounded())
+        // Now we check isGrounded instead of a raycast-based method
+        if (Input.GetButtonDown("Jump") && isGrounded && !jumpRequested)
         {
             jumpRequested = true;
         }
@@ -101,9 +104,9 @@ public class PlayerController : MonoBehaviour
         // Apply torque to roll the sphere
         rb.AddTorque(moveDirection * moveTorque);
 
-        if (IsGroundedForce())
+        // If on the ground, apply extra force for more direct control
+        if (isGrounded)
         {
-            // Optionally apply force for additional control
             Vector3 forceDirection = (forward * v + right * h).normalized;
             rb.AddForce(forceDirection * moveForce);
         }
@@ -115,15 +118,15 @@ public class PlayerController : MonoBehaviour
             jumpRequested = false;
         }
 
-        if (IsGrounded() && slamming)
+        // If we have landed while slamming, reset slamming
+        if (isGrounded && slamming)
         {
             slamming = false;
         }
+
         // --- Ground Slam (hold Ctrl to slam downward if in air) ---
-        // Check if we're in the air and the user is holding the Ctrl key
-        if (!IsGrounded() && Input.GetKey(KeyCode.LeftControl) && !slamming)
+        if (!isGrounded && Input.GetKey(KeyCode.LeftControl) && !slamming)
         {
-            // Add downward force as an acceleration
             rb.AddForce(Vector3.down * slamForce, ForceMode.Impulse);
             slamming = true;
         }
@@ -134,7 +137,7 @@ public class PlayerController : MonoBehaviour
         // Build a rotation from our current yaw & pitch
         Quaternion camRotation = Quaternion.Euler(currentPitch, currentYaw, 0f);
 
-        // Sphere position is our camera target
+        // Sphere (or player's) position is our camera target
         Vector3 targetPos = transform.position;
 
         // Position the camera behind and above the sphere
@@ -145,18 +148,48 @@ public class PlayerController : MonoBehaviour
         cameraTransform.LookAt(targetPos + Vector3.up * cameraHeight);
     }
 
-    // A simple ground check using raycast
-    private bool IsGrounded()
+    /// <summary>
+    /// Called when this object starts colliding with another.
+    /// We check if it's the ground layer and has an upward-ish normal.
+    /// If so, increment our groundContactCount.
+    /// </summary>
+    private void OnCollisionEnter(Collision collision)
     {
-        // Raycast straight down from the sphere's position
-        // Adjust groundCheckDistance depending on sphere radius
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer);
+        // 1) Check if the collider is in the ground layer.
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+        {
+            // 2) Check if at least one contact normal is "floor-like" (normal.y > 0.5).
+            bool foundGroundContact = false;
+            foreach (ContactPoint contact in collision.contacts)
+            {
+                if (contact.normal.y > 0.5f)
+                {
+                    foundGroundContact = true;
+                    break;
+                }
+            }
+
+            // 3) If ground contact is found, increment the counter.
+            if (foundGroundContact)
+            {
+                groundContactCount++;
+                isGrounded = (groundContactCount > 0);
+            }
+        }
     }
-    
-    private bool IsGroundedForce()
+
+    /// <summary>
+    /// Called when this object stops colliding with another.
+    /// If we leave a ground object, decrement our groundContactCount.
+    /// </summary>
+    private void OnCollisionExit(Collision collision)
     {
-        // Raycast straight down from the sphere's position
-        // Adjust groundCheckDistance depending on sphere radius
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistanceForce, groundLayer);
+        // 1) Check if the collider is in the ground layer.
+        if (((1 << collision.gameObject.layer) & groundLayer) != 0)
+        {
+            // Only decrement if we actually counted it on collision enter.
+            groundContactCount = Mathf.Max(groundContactCount - 1, 0);
+            isGrounded = (groundContactCount > 0);
+        }
     }
 }
