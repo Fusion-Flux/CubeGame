@@ -25,18 +25,18 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -45,10 +45,10 @@ MonoBehaviour:
     m_RotationOrder: 4
   CollisionMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 4294967295
   RelativeVelocityThreshold:
     Min: 0
-    Max: 100
+    Max: 10
   PitchRandomness: 0.1
   SlideVolMultiplier: 1
   ImpactNormalBias: 1
@@ -57,5 +57,8 @@ MonoBehaviour:
   AudioSets:
   - Key: {fileID: 11400000, guid: 26c05335062a97a4a9d15748227492ef, type: 2}
     Impacts:
-    - {fileID: 8300000, guid: cab8adffa639d5d4cbb841c3c8bc5bcc, type: 3}
+    - {fileID: 8300000, guid: b9c62d8d73146d54b9790ffd3146d47a, type: 3}
+    - {fileID: 8300000, guid: 9233f43de0f6e414a803b39214d1af22, type: 3}
+    - {fileID: 8300000, guid: 457a7e1b04277194ca42bc8bc4dc528b, type: 3}
+    - {fileID: 8300000, guid: 9ba492960bf135e44b0a09029bf10727, type: 3}
     Slide: {fileID: 8300000, guid: d199eebd76971a34a960d12c9292dda3, type: 3}

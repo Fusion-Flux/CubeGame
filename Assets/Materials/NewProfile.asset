@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cf1dab834d4ec34195b920ea7bbf9ec, type: 3}
-  m_Name: HDRPDEFAULT
+  m_Name: NewProfile
   m_EditorClassIdentifier: 
   m_RenderPipelineSettings:
     supportShadowMask: 1
     supportSSR: 0
-    supportSSRTransparent: 0
+    supportSSRTransparent: 1
     supportSSAO: 1
     supportSSGI: 1
     supportSubsurfaceScattering: 1
@@ -30,7 +30,7 @@ MonoBehaviour:
     supportVolumetrics: 1
     supportVolumetricClouds: 0
     supportLightLayers: 1
-    renderingLayerMaskBuffer: 0
+    renderingLayerMaskBuffer: 1
     supportWater: 0
     waterSimulationResolution: 128
     supportWaterExclusion: 1
@@ -75,10 +75,10 @@ MonoBehaviour:
     supportTerrainHole: 0
     lightProbeSystem: 1
     oldLightProbeSystem: 0
-    probeVolumeMemoryBudget: 2048
+    probeVolumeMemoryBudget: 1024
     supportProbeVolumeGPUStreaming: 0
     supportProbeVolumeDiskStreaming: 0
-    probeVolumeSHBands: 2
+    probeVolumeSHBands: 1
     supportProbeVolumeScenarios: 0
     supportProbeVolumeScenarioBlending: 1
     probeVolumeBlendingMemoryBudget: 128
