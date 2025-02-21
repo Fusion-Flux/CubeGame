@@ -1,32 +1,37 @@
-using Unity.VisualScripting;
+using Unity.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    [Tooltip("Force applied to the sphere for movement")]
+    [Header("Movement Settings")] [Tooltip("Force applied to the sphere for movement")]
     public float moveTorque = 10f;
+
     public float moveForce = 10f;
     public float angVel = 10f;
 
-    [Header("Jump Settings")]
-    [Tooltip("Force/impulse applied when jumping")]
+    [Header("Jump Settings")] [Tooltip("Force/impulse applied when jumping")]
     public float jumpForce = 7f;
 
     [Tooltip("How far below the sphere we check for the ground")]
     public float groundCheckDistance = 1.1f;
+
     public float groundCheckDistanceForce = 1.1f;
+
     [Tooltip("Which layers are considered 'ground'")]
     public LayerMask groundLayer;
 
-    [Header("Slam Settings")]
-    [Tooltip("Downward acceleration while 'slamming' in mid-air")]
+    [Header("Coyote Time Settings")] [Tooltip("Duration of coyote time after leaving the ground")]
+    public float coyoteTime = 0.2f;
+
+    private float coyoteTimeCounter;
+
+    [Header("Slam Settings")] [Tooltip("Downward acceleration while 'slamming' in mid-air")]
     public float slamForce = 20f;
 
-    [Header("Camera Settings")]
-    [Tooltip("The Transform of the camera that will follow/orbit the player")]
+    [Header("Camera Settings")] [Tooltip("The Transform of the camera that will follow/orbit the player")]
     public Transform cameraTransform;
-
+    
+    public CheckPoint checkPoint;
     [Tooltip("Distance behind the sphere at which the camera will be placed")]
     public float cameraDistance = 5f;
 
@@ -41,9 +46,15 @@ public class PlayerController : MonoBehaviour
 
     [Tooltip("Maximum pitch (looking up)")]
     public float maxYAngle = 60f;
+    
+    [Header("Gravity Settings")] 
+    private Vector3 gravityDirection = Vector3.down;
+    private Vector3 prevGravityDirection = Vector3.down;
+    private float gravityStrength = 9.81f;
 
-    private float currentYaw = 0f;
-    private float currentPitch = 0f;
+    private Quaternion cameraRotation = Quaternion.identity;
+    private float pitch = 0f;
+    private Vector3 relativeForward;
 
     public bool slamming = false;
 
@@ -52,11 +63,16 @@ public class PlayerController : MonoBehaviour
     // We store whether jump was requested this frame
     private bool jumpRequested = false;
 
+    private bool isGrounded;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.maxAngularVelocity = angVel;
-        
+
+        // Initialize relativeForward with the camera's initial forward direction
+        relativeForward = cameraTransform.forward;
+
         // (Optional) Lock and hide the cursor for a more seamless experience
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -68,30 +84,47 @@ public class PlayerController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * cameraSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * cameraSensitivity;
 
-        currentYaw += mouseX;          // Yaw (horizontal turn)
-        currentPitch -= mouseY;        // Pitch (vertical turn)
-        currentPitch = Mathf.Clamp(currentPitch, minYAngle, maxYAngle);
+        // Adjust the pitch based on mouse Y movement
+        pitch -= mouseY;
+        pitch = Mathf.Clamp(pitch, minYAngle, maxYAngle);
+
+        // Adjust the yaw based on mouse X movement
+        cameraRotation = Quaternion.Euler(0f, mouseX, 0f) * cameraRotation;
+
+        // Apply the new rotation
+        cameraRotation = Quaternion.Euler(pitch, cameraRotation.eulerAngles.y, 0f);
 
         // --- Keyboard Input for Jump ---
-        if (Input.GetButtonDown("Jump") && IsGrounded() && !jumpRequested)
+        if (Input.GetButtonDown("Jump") && (isGrounded || coyoteTimeCounter > 0) && !jumpRequested)
         {
             jumpRequested = true;
+        }
+
+        // Decrease coyote time counter
+        if (!isGrounded)
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+        else
+        {
+            coyoteTimeCounter = coyoteTime;
         }
     }
 
     private void FixedUpdate()
     {
+        ApplyGravity();
         // --- Keyboard Input for Movement ---
-        float h = Input.GetAxis("Horizontal");  // A/D or Left/Right
-        float v = Input.GetAxis("Vertical");    // W/S or Up/Down
+        float h = Input.GetAxis("Horizontal"); // A/D or Left/Right
+        float v = Input.GetAxis("Vertical"); // W/S or Up/Down
 
         // Camera-aligned directions: forward & right
         Vector3 forward = cameraTransform.forward;
-        Vector3 right   = cameraTransform.right;
+        Vector3 right = cameraTransform.right;
 
         // We don't want our sphere to move up/down when pressing forward/back
-        forward.y = 0f;
-        right.y   = 0f;
+        forward = Vector3.ProjectOnPlane(forward, gravityDirection);
+        right = Vector3.ProjectOnPlane(right, gravityDirection);
 
         forward.Normalize();
         right.Normalize();
@@ -112,75 +145,127 @@ public class PlayerController : MonoBehaviour
         // --- Apply Jump if Requested ---
         if (jumpRequested)
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(-gravityDirection * jumpForce, ForceMode.Impulse);
             jumpRequested = false;
+            coyoteTimeCounter = 0; // Reset coyote time after jumping
         }
 
-        if (IsGrounded() && slamming)
+        if (isGrounded && slamming)
         {
             slamming = false;
         }
+
         // --- Ground Slam (hold Ctrl to slam downward if in air) ---
         // Check if we're in the air and the user is holding the Ctrl key
-        if (!IsGrounded() && Input.GetKey(KeyCode.LeftControl) && !slamming)
+        if (!isGrounded && Input.GetKey(KeyCode.LeftControl) && !slamming)
         {
             // Add downward force as an acceleration
-            rb.AddForce(Vector3.down * slamForce, ForceMode.Impulse);
+            rb.AddForce(gravityDirection * slamForce, ForceMode.Impulse);
             slamming = true;
         }
     }
 
     private void LateUpdate()
     {
-        // Build a rotation from our current yaw & pitch
-        Quaternion camRotation = Quaternion.Euler(currentPitch, currentYaw, 0f);
+        // Interpolate the gravity direction
+        Vector3 lerpGravityDirection = Vector3.Slerp(prevGravityDirection, gravityDirection, Time.deltaTime * 5f);
+        Vector3 relativeUp = -lerpGravityDirection;
 
-        // Sphere position is our camera target
+        // Calculate the rotation needed to align with the new gravity direction
+        Quaternion gravityAlignment = Quaternion.FromToRotation(Vector3.up, relativeUp);
+
+        // Calculate the relative forward direction
+        Vector3 relativeForward = gravityAlignment * Vector3.forward;
+
+        // Calculate the final rotation by combining gravity alignment and camera rotation
+        Quaternion finalRotation = Quaternion.LookRotation(relativeForward, relativeUp) * cameraRotation;
+
+        // Smoothly interpolate the camera's rotation
+        cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, finalRotation, Time.deltaTime * 5.0f);
+
+        // Directly set the camera's position
         Vector3 targetPos = transform.position;
+        Vector3 offset = finalRotation * new Vector3(0f, cameraHeight, -cameraDistance);
+        cameraTransform.position = targetPos + offset;
 
-        // Position the camera behind and above the sphere
-        Vector3 offset = new Vector3(0f, cameraHeight, -cameraDistance);
-        cameraTransform.position = targetPos + camRotation * offset;
+        // Make the camera look at the target position with the correct up direction
+        cameraTransform.LookAt(targetPos, relativeUp);
 
-        // Make the camera look at the sphere (slightly above center)
-        cameraTransform.LookAt(targetPos + Vector3.up * cameraHeight);
+        prevGravityDirection = lerpGravityDirection;
     }
 
-    // A simple ground check using raycast
-    private bool IsGrounded()
+
+    private void ApplyGravity()
     {
-        // Raycast straight down from the sphere's position
-        // Adjust groundCheckDistance depending on sphere radius
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer);
+        rb.AddForce(gravityDirection * gravityStrength, ForceMode.Acceleration);
     }
-    
+
+    // Use collision detection to determine if the player is grounded
+    private void OnCollisionStay(Collision collision)
+    {
+        if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
+        {
+            isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
+        {
+            isGrounded = false;
+        }
+    }
+
     private bool IsGroundedForce()
     {
         // Raycast straight down from the sphere's position
         // Adjust groundCheckDistance depending on sphere radius
-        return Physics.Raycast(transform.position, Vector3.down, groundCheckDistanceForce, groundLayer);
+        return Physics.Raycast(transform.position, gravityDirection, groundCheckDistanceForce, groundLayer);
     }
-    
-    public Transform resetPoint; // The empty GameObject representing the reset coordinates
-    public LayerMask resetLayer; // Layer mask for the reset objects
 
+    public void SetGravity(Vector3 newGravityDirection, float newGravityStrength)
+    {
+        //prevGravityDirection = gravityDirection;
+        gravityDirection = newGravityDirection;
+        gravityStrength = newGravityStrength;
+    }
+
+    public LayerMask resetLayer; // Layer mask for the reset objects
+    public LayerMask checkPointLayer;
     private void OnTriggerEnter(Collider other)
     {
+        if (checkPointLayer == (checkPointLayer | (1 << other.gameObject.layer)))
+        {
+            checkPoint = other.gameObject.GetComponent<CheckPoint>();
+            //spawnPoint = point.spawnPoint;
+        }
+
         // Check if the object the player collides with is on the "Reset" layer
         if (resetLayer == (resetLayer | (1 << other.gameObject.layer)))
         {
             // Move the player to the reset point
-            transform.position = resetPoint.position;
+            transform.position = checkPoint.transform.position + checkPoint.offsetVector;
+            
 
             // Reset only the horizontal velocity
             Rigidbody playerRigidbody = GetComponent<Rigidbody>();
             if (playerRigidbody != null)
             {
                 Vector3 velocity = playerRigidbody.linearVelocity;
-                velocity.x = 0;
-                velocity.z = 0;
+                Vector3 targetGravityDirection = checkPoint.gravityDirection;
+
+                // Calculate the rotation needed to align currentGravityDirection with targetGravityDirection
+                Quaternion rotation = Quaternion.FromToRotation(gravityDirection, targetGravityDirection);
+
+                // Apply the rotation to the velocity
+                velocity = rotation * velocity;
+                float projection = Vector3.Dot(velocity, checkPoint.gravityDirection);
+                velocity = checkPoint.gravityDirection * projection;
+
                 playerRigidbody.linearVelocity = velocity;
             }
+            SetGravity(checkPoint.gravityDirection,checkPoint.gravityStrength);
         }
     }
 }

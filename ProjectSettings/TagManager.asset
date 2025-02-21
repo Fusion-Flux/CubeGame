@@ -14,8 +14,8 @@ TagManager:
   - Player
   - PlayerAudio
   - Reset
-  - 
-  - 
+  - Checkpoint
+  - ForceCollision
   - 
   - 
   - 
