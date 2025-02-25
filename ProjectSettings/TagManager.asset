@@ -15,7 +15,7 @@ TagManager:
   - PlayerAudio
   - Reset
   - Checkpoint
-  - ForceCollision
+  - GravityZones
   - 
   - 
   - 

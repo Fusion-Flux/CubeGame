@@ -6229,7 +6229,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 3
 --- !u!23 &772181256
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -6320,12 +6320,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a2f3b7dec057d8478d1726a4c86944e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTorque: 60
-  moveForce: 30
-  angVel: 20
+  moveTorque: 100
+  moveForce: 60
+  airMoveForce: 80
+  angVel: 30
   jumpForce: 70
-  groundCheckDistance: 1
-  groundCheckDistanceForce: 1.5
+  groundCheckDistance: 1.2
+  groundCheckDistanceForce: 1.1
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
@@ -6336,9 +6337,10 @@ MonoBehaviour:
   cameraDistance: 5
   cameraHeight: 1.5
   cameraSensitivity: 4
-  minYAngle: -20
-  maxYAngle: 60
+  minYAngle: -90
+  maxYAngle: 70
   slamming: 0
+  maxJumps: 2
   resetLayer:
     serializedVersion: 2
     m_Bits: 384
