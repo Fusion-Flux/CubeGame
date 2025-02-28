@@ -1,5 +1,6 @@
 using Unity.Collections;
 using UnityEngine;
+using Unity.Cinemachine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,53 +12,61 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump Settings")]
     public float jumpForce = 7f;
-    public float groundCheckDistance = 1.1f;
+    // A customizable delay between jump triggers (in seconds)
+    public float jumpTriggerDelay = 0.5f;
+    // Existing variables for jump reset on landing (if desired)
     public float groundCheckDistanceForce = 1.1f;
     public LayerMask groundLayer;
+    private int jumpsLeft = 0;
+    public int maxJumps = 2;
 
-    [Header("Coyote Time Settings")]
-    public float coyoteTime = 0.2f;
+    // [Header("Slam Settings")]
+    // public float slamForce = 20f;
 
-    [Header("Slam Settings")]
-    public float slamForce = 20f;
-
-    [Header("Camera Settings")]
-    public Transform cameraTransform;
-    public CheckPoint checkPoint;
-    public float cameraDistance = 5f;
-    public float cameraHeight = 2f;
-    public float cameraSensitivity = 2f;
-    public float minYAngle = -90f;
-    public float maxYAngle = 90f;
+    [Header("Dash Settings")]
+    public float dashForce = 20f;
+    public float dashCooldown = 1f;
+    private float dashTimer = 0f;
+    private bool dashRequested = false;
 
     [Header("Gravity Settings")]
-    private Vector3 gravityDirection = Vector3.down;
+    public Vector3 gravityDirection = Vector3.down;
     private Vector3 prevGravityDirection = Vector3.down;
-    private float gravityStrength = 9.81f;
+    public float gravityStrength = 9.81f;
 
-    private Quaternion cameraRotation = Quaternion.identity;
-    private float pitch = 0f;
-    private Vector3 relativeForward;
-
-    public bool slamming = false;
+    // public bool slamming = false;
     private bool canJump = false;
     private Rigidbody rb;
     private bool jumpRequested = false;
     private bool isGrounded;
-    private int jumpsLeft = 2;
-    public int maxJumps = 2;
-    private float jumpResetCooldown = 0.5f;
+    // This cooldown is used after a jump is executed (and for resetting jumps on collision)
+    public float jumpResetCooldown = 0.5f;
     private float jumpResetTimer = 0f;
+    private float disableCamColider = 0f;
+    private bool camColider = true;
 
+    // New timer for enforcing delay between jump triggers
+    private float jumpTriggerTimer = 0f;
+
+    public CheckPoint checkPoint;
+    public CinemachineCamera virtualCamera;
+    
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.maxAngularVelocity = angVel;
-        relativeForward = cameraTransform.forward;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // Ensure the virtual camera is assigned
+        if (virtualCamera == null)
+        {
+            virtualCamera = FindObjectOfType<CinemachineCamera>();
+        }
     }
+
     public UniversalValues uniVals;
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && !uniVals.paused && !uniVals.levelComplete)
@@ -66,29 +75,55 @@ public class PlayerController : MonoBehaviour
             Time.timeScale = 0;
             uniVals.Paused.gameObject.SetActive(true);
             Cursor.lockState = CursorLockMode.None;
-        }else if (Input.GetKeyDown(KeyCode.Escape) && uniVals.paused && !uniVals.levelComplete)
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape) && uniVals.paused && !uniVals.levelComplete)
         {
             uniVals.paused = false;
             Time.timeScale = 1;
             uniVals.Paused.gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.Locked;
         }
-        // --- Mouse Input for Camera ---
-        float mouseX = Input.GetAxis("Mouse X") * cameraSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * cameraSensitivity;
 
-        pitch = Mathf.Clamp(pitch - mouseY, minYAngle, maxYAngle);
-        cameraRotation = Quaternion.Euler(0f, mouseX, 0f) * cameraRotation;
-        cameraRotation = Quaternion.Euler(pitch, cameraRotation.eulerAngles.y, 0f);
+        // Update the jump trigger timer
+        if (jumpTriggerTimer > 0)
+        {
+            jumpTriggerTimer -= Time.deltaTime;
+        }
 
-        if (Input.GetButtonDown("Jump") && jumpsLeft > 0 && !jumpRequested)
+        // Only allow jump input if the delay has passed
+        if (Input.GetButtonDown("Jump") && jumpsLeft > 0 && jumpTriggerTimer <= 0)
         {
             jumpRequested = true;
+            jumpTriggerTimer = jumpTriggerDelay;
+        }
+
+        // Dash input: press Left Shift to dash if cooldown is complete
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashTimer <= 0)
+        {
+            dashRequested = true;
+            dashTimer = dashCooldown;
+        }
+        if (dashTimer > 0)
+        {
+            dashTimer -= Time.deltaTime;
         }
 
         if (jumpResetTimer > 0)
         {
             jumpResetTimer -= Time.deltaTime;
+        }
+        if (disableCamColider >= 0)
+        {
+            disableCamColider -= Time.deltaTime;
+        }
+        if (disableCamColider < 0)
+        {
+            var colliderExtension = virtualCamera.GetComponent<CinemachineDeoccluder>();
+            if (colliderExtension != null)
+            {
+                colliderExtension.enabled = true;
+            }
+            disableCamColider = 0;
         }
     }
 
@@ -98,8 +133,9 @@ public class PlayerController : MonoBehaviour
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        Vector3 forward = Vector3.ProjectOnPlane(cameraTransform.forward, gravityDirection).normalized;
-        Vector3 right = Vector3.ProjectOnPlane(cameraTransform.right, gravityDirection).normalized;
+        // Calculate camera's forward/right relative to gravity for movement torque and force
+        Vector3 forward = Vector3.ProjectOnPlane(Camera.main.transform.forward, gravityDirection).normalized;
+        Vector3 right = Vector3.ProjectOnPlane(Camera.main.transform.right, gravityDirection).normalized;
         Vector3 moveDirection = (right * v + -forward * h).normalized;
 
         rb.AddTorque(moveDirection * moveTorque);
@@ -109,39 +145,67 @@ public class PlayerController : MonoBehaviour
 
         if (jumpRequested)
         {
-            rb.AddForce(-gravityDirection * jumpForce, ForceMode.Impulse);
+            Vector3 relativeUp = -gravityDirection.normalized;
+            float verticalSpeed = Vector3.Dot(rb.linearVelocity, relativeUp);
+            if (verticalSpeed < 0)
+            {
+                Vector3 downwardComponent = Vector3.Project(rb.linearVelocity, relativeUp);
+                rb.linearVelocity -= downwardComponent;
+            }
+            rb.AddForce(relativeUp * jumpForce, ForceMode.Impulse);
             jumpRequested = false;
             jumpsLeft--;
             jumpResetTimer = jumpResetCooldown;
         }
 
-        if (isGrounded && slamming)
+        // Modified dash logic: dash relative to movement direction while preserving vertical look
+        if (dashRequested)
         {
-            slamming = false;
-        }
-
-        if (!isGrounded && Input.GetKey(KeyCode.LeftControl) && !slamming)
-        {
-            rb.AddForce(gravityDirection * slamForce, ForceMode.Impulse);
-            slamming = true;
+            Vector3 dashDirection;
+            if (Mathf.Abs(h) > 0.1f || Mathf.Abs(v) > 0.1f)
+            {
+                // Use the camera's full forward (which includes vertical look) along with its right vector
+                dashDirection = (Camera.main.transform.forward * v + Camera.main.transform.right * h).normalized;
+            }
+            else
+            {
+                // Fallback dash direction (includes vertical look)
+                dashDirection = Camera.main.transform.forward.normalized;
+            }
+            rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
+            dashRequested = false;
         }
     }
 
+
+
+    public Transform worldUpOverrideTransform; // assign this in the Inspector
+
     private void LateUpdate()
     {
+        if (virtualCamera != null)
+        {
+            if (gravityDirection != prevGravityDirection)
+            {
+                var colliderExtension = virtualCamera.GetComponent<CinemachineDeoccluder>();
+                if (colliderExtension != null)
+                {
+                    colliderExtension.enabled = false;
+                }
+            }
+            else
+            {
+                var colliderExtension = virtualCamera.GetComponent<CinemachineDeoccluder>();
+                if (colliderExtension != null)
+                {
+                    colliderExtension.enabled = true;
+                }
+            }
+        }
+        // Interpolate the gravity direction for a smoother camera up adjustment
         Vector3 lerpGravityDirection = Vector3.Slerp(prevGravityDirection, gravityDirection, Time.deltaTime * 5f);
-        Vector3 relativeUp = -lerpGravityDirection;
-        Quaternion gravityAlignment = Quaternion.FromToRotation(Vector3.up, relativeUp);
-        Vector3 relativeForward = gravityAlignment * Vector3.forward;
-        Quaternion finalRotation = Quaternion.LookRotation(relativeForward, relativeUp) * cameraRotation;
-
-        cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, finalRotation, Time.deltaTime * 5.0f);
-
-        Vector3 targetPos = transform.position;
-        Vector3 offset = finalRotation * new Vector3(0f, cameraHeight, -cameraDistance);
-        cameraTransform.position = targetPos + offset;
-        cameraTransform.LookAt(targetPos, relativeUp);
-
+        worldUpOverrideTransform.rotation = Quaternion.FromToRotation(Vector3.up, -lerpGravityDirection);
+        // Update the previous gravity direction for the next frame
         prevGravityDirection = lerpGravityDirection;
     }
 
@@ -177,6 +241,15 @@ public class PlayerController : MonoBehaviour
     {
         gravityDirection = newGravityDirection;
         gravityStrength = newGravityStrength;
+
+        // Optionally, adjust the camera immediately upon gravity change
+        if (virtualCamera != null)
+        {
+            Vector3 relativeUp = -gravityDirection;
+            Quaternion gravityAlignment = Quaternion.FromToRotation(Vector3.up, relativeUp);
+            Vector3 relativeForward = gravityAlignment * Vector3.forward;
+            virtualCamera.transform.rotation = Quaternion.LookRotation(relativeForward, relativeUp);
+        }
     }
 
     public LayerMask resetLayer;
@@ -204,10 +277,13 @@ public class PlayerController : MonoBehaviour
                 playerRigidbody.linearVelocity = velocity;
             }
             SetGravity(checkPoint.gravityDirection, checkPoint.gravityStrength);
-        }
-        if (resetLayer == (resetLayer | (1 << other.gameObject.layer)))
-        {
-            
+            var colliderExtension = virtualCamera.GetComponent<CinemachineDeoccluder>();
+            if (colliderExtension != null)
+            {
+                colliderExtension.enabled = false;
+            }
+
+            disableCamColider = 1f;
         }
     }
 
