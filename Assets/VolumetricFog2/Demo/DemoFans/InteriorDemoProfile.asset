@@ -132,7 +132,7 @@ MonoBehaviour:
   lightDiffusionIntensity: 0.4
   lightDiffusionNearDepthAtten: 0
   receiveShadows: 1
-  shadowIntensity: 0.5
+  shadowIntensity: 1
   shadowCancellation: 0
   shadowMaxDistance: 250
   cookie: 0
