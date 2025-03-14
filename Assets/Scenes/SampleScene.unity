@@ -993,7 +993,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _HeightGradientTex:
-        m_Texture: {fileID: 180094793}
+        m_Texture: {fileID: 2005518731}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -2309,52 +2309,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: -180}
---- !u!28 &180094793
-Texture2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_IsAlphaChannelOptional: 0
-  serializedVersion: 3
-  m_Width: 32
-  m_Height: 1
-  m_CompleteImageSize: 128
-  m_MipsStripped: 0
-  m_TextureFormat: 4
-  m_MipCount: 1
-  m_IsReadable: 1
-  m_IsPreProcessed: 0
-  m_IgnoreMipmapLimit: 1
-  m_MipmapLimitGroupName: 
-  m_StreamingMipmaps: 0
-  m_StreamingMipmapsPriority: 0
-  m_VTOnly: 0
-  m_AlphaIsTransparency: 0
-  m_ImageCount: 1
-  m_TextureDimension: 2
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_LightmapFormat: 0
-  m_ColorSpace: 0
-  m_PlatformBlob: 
-  image data: 128
-  _typelessdata: fffffffffcfefffffafefffff7fdfffff4fdfffff2fcffffeffbffffedfbffffeafaffffe7f9ffffe5f9ffffe2f8ffffdff8ffffddf7ffffdaf6ffffd8f6ffffd5f5ffffd8f6ffffdaf6ffffddf7ffffdff8ffffe2f8ffffe5f9ffffe7f9ffffeafaffffedfbffffeffbfffff2fcfffff4fdfffff7fdfffffafefffffcfeffff
-  m_StreamData:
-    serializedVersion: 2
-    offset: 0
-    size: 0
-    path: 
 --- !u!1 &240692692
 GameObject:
   m_ObjectHideFlags: 0
@@ -3548,6 +3502,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visibleDistance: 10
+  tmp: {fileID: 0}
+  mainCamera: {fileID: 0}
 --- !u!114 &407505831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6269,6 +6225,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visibleDistance: 10
+  tmp: {fileID: 0}
+  mainCamera: {fileID: 0}
 --- !u!43 &759752980
 Mesh:
   m_ObjectHideFlags: 0
@@ -16283,6 +16241,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visibleDistance: 10
+  tmp: {fileID: 0}
+  mainCamera: {fileID: 0}
 --- !u!1 &2003027925
 GameObject:
   m_ObjectHideFlags: 0
@@ -16635,6 +16595,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!28 &2005518731
+Texture2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_IsAlphaChannelOptional: 0
+  serializedVersion: 3
+  m_Width: 32
+  m_Height: 1
+  m_CompleteImageSize: 128
+  m_MipsStripped: 0
+  m_TextureFormat: 4
+  m_MipCount: 1
+  m_IsReadable: 1
+  m_IsPreProcessed: 0
+  m_IgnoreMipmapLimit: 1
+  m_MipmapLimitGroupName: 
+  m_StreamingMipmaps: 0
+  m_StreamingMipmapsPriority: 0
+  m_VTOnly: 0
+  m_AlphaIsTransparency: 0
+  m_ImageCount: 1
+  m_TextureDimension: 2
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 1
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_LightmapFormat: 0
+  m_ColorSpace: 0
+  m_PlatformBlob: 
+  image data: 128
+  _typelessdata: fffffffffcfefffffafefffff7fdfffff4fdfffff2fcffffeffbffffedfbffffeafaffffe7f9ffffe5f9ffffe2f8ffffdff8ffffddf7ffffdaf6ffffd8f6ffffd5f5ffffd8f6ffffdaf6ffffddf7ffffdff8ffffe2f8ffffe5f9ffffe7f9ffffeafaffffedfbffffeffbfffff2fcfffff4fdfffff7fdfffffafefffffcfeffff
+  m_StreamData:
+    serializedVersion: 2
+    offset: 0
+    size: 0
+    path: 
 --- !u!43 &2035137286
 Mesh:
   m_ObjectHideFlags: 0
