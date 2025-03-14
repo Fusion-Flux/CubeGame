@@ -16,7 +16,7 @@ public class PlayerFade : MonoBehaviour
     
     private Renderer[] renderers;
 
-    void Start()
+    void Start()    
     {
         // Cache all renderers on the player and its children.
         renderers = GetComponentsInChildren<Renderer>();
