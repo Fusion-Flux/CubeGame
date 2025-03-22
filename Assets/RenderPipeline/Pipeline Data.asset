@@ -17,6 +17,7 @@ MonoBehaviour:
   ignorePostProcessingOption: 1
   ignoreOverlayCameras: 1
   camerasLayerMask:
+    serializedVersion: 2
     m_Bits: 4294967295
 --- !u!114 &11400000
 MonoBehaviour:
@@ -42,8 +43,10 @@ MonoBehaviour:
     probeSamplingDebugMesh: {fileID: 0}
     probeSamplingDebugTexture: {fileID: 0}
     probeVolumeBlendStatesCS: {fileID: 0}
-  m_RendererFeatures: []
-  m_RendererFeatureMap: 
+  m_RendererFeatures:
+  - {fileID: 5874837657848761271}
+  - {fileID: 7680738821461559728}
+  m_RendererFeatureMap: b7cb293db99d8751b0c9c4894377976a
   m_UseNativeRenderPass: 0
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -62,10 +65,51 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
-  m_RenderingMode: 2
+  m_RenderingMode: 1
   m_DepthPrimingMode: 0
   m_CopyDepthMode: 0
   m_DepthAttachmentFormat: 0
   m_DepthTextureFormat: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 1
+--- !u!114 &5874837657848761271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf716a1be50b448e7b1d1968ab734946, type: 3}
+  m_Name: ShinySSRR
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  renderPassEvent: 500
+  useDeferred: 0
+  enableScreenSpaceNormalsPass: 0
+  customSmoothnessMetallicPass: 0
+  ignorePostProcessingOption: 1
+  cameraLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  ignoreReflectionProbes: 1
+--- !u!114 &7680738821461559728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88bd13fabf96a4cc1aaf221e40805c5c, type: 3}
+  m_Name: RadiantRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  renderingPath: 1
+  ignorePostProcessingOption: 1
+  ignoreOverlayCameras: 1
+  camerasLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295

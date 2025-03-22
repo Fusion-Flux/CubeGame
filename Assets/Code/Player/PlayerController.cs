@@ -20,9 +20,6 @@ public class PlayerController : MonoBehaviour
     private int jumpsLeft = 0;
     public int maxJumps = 2;
 
-    // [Header("Slam Settings")]
-    // public float slamForce = 20f;
-
     [Header("Dash Settings")]
     public float dashForce = 20f;
     public float dashCooldown = 1f;
@@ -34,7 +31,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 prevGravityDirection = Vector3.down;
     public float gravityStrength = 9.81f;
 
-    // public bool slamming = false;
     private bool canJump = false;
     private Rigidbody rb;
     private bool jumpRequested = false;
@@ -51,6 +47,12 @@ public class PlayerController : MonoBehaviour
     public CheckPoint checkPoint;
     public CinemachineCamera virtualCamera;
     
+    [Header("Dynamic Jump Regen Settings")]
+    // Add any tags here in the Inspector to disallow jump regeneration when colliding with objects with these tags.
+    public string[] disallowedRegenTags;
+    // Internal counter to track collisions with objects that should block jump regeneration.
+    private int disallowedRegenCollisionCount = 0;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -177,8 +179,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
-
     public Transform worldUpOverrideTransform; // assign this in the Inspector
 
     private void LateUpdate()
@@ -214,21 +214,45 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(gravityDirection * gravityStrength, ForceMode.Acceleration);
     }
 
+    // Helper function to check if the collision is with an object that should block regen.
+    private bool IsCollisionWithDisallowedTag(Collision collision)
+    {
+        foreach (string tag in disallowedRegenTags)
+        {
+            if (collision.gameObject.CompareTag(tag))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Update the counter when collisions with disallowed objects begin
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (IsCollisionWithDisallowedTag(collision))
+        {
+            disallowedRegenCollisionCount++;
+        }
+    }
+
+    // Update the counter when collisions with disallowed objects end
+    private void OnCollisionExit(Collision collision)
+    {
+        if (IsCollisionWithDisallowedTag(collision))
+        {
+            disallowedRegenCollisionCount = Mathf.Max(0, disallowedRegenCollisionCount - 1);
+        }
+    }
+
+    // Only reset jump count if colliding with valid ground and not colliding with any disallowed objects.
     private void OnCollisionStay(Collision collision)
     {
         if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
         {
             isGrounded = true;
-            if (jumpResetTimer <= 0)
+            if (jumpResetTimer <= 0 && disallowedRegenCollisionCount == 0)
                 jumpsLeft = maxJumps;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
-        {
-            isGrounded = false;
         }
     }
 
