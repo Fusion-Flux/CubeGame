@@ -29,7 +29,7 @@ MonoBehaviour:
   active: 1
   indirectIntensity:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.46
   indirectDistanceAttenuation:
     m_OverrideState: 0
     m_Value: 0
@@ -50,7 +50,7 @@ MonoBehaviour:
     m_Value: 3
   nearFieldObscuranceSpread:
     m_OverrideState: 1
-    m_Value: 0.426
+    m_Value: 1
   nearFieldObscuranceMaxCameraDistance:
     m_OverrideState: 0
     m_Value: 125
@@ -145,7 +145,7 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.25
   showInEditMode:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   showInSceneView:
     m_OverrideState: 0
@@ -187,16 +187,16 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   debugView:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   debugDepthMultiplier:
     m_OverrideState: 0
     m_Value: 10
   compareMode:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   compareSameSide:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   comparePanning:
     m_OverrideState: 0
@@ -206,5 +206,4 @@ MonoBehaviour:
     m_Value: 1.4
   compareLineWidth:
     m_OverrideState: 0
-    m_Value: 0.002
     m_Value: 0.002
