@@ -10,12 +10,16 @@ public class UniversalValues : MonoBehaviour
     public bool paused = false;
     public bool levelComplete = false;
 
-    public int finalScore;
+    public float finalScore;
     public Canvas LevelComplete;
     public Canvas Scoreboard;
     public Canvas HighScores;
     public Canvas Paused;
+    public Canvas HUD;
     public Canvas Leaderboard;
+    public TextMeshProUGUI ActiveTimer;
+    
+    public TextMeshProUGUI FinalTimeText;
     
     public TopScoresManager topScoresManager;
     public TMP_InputField  nameInputField;
@@ -34,7 +38,7 @@ public class UniversalValues : MonoBehaviour
     {
         
     }
-
+    
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -54,8 +58,8 @@ public class UniversalValues : MonoBehaviour
     
     public void SubmitScore()
     {
-        int score = finalScore;
+        float score = finalScore;
         string playerName = nameInputField.text;
-        topScoresManager.AddScore(playerName, score);
+        topScoresManager.AddTime(playerName, score);
     }
 }

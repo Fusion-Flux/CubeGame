@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - DisallowRegen
+  - LevelStart
+  - AllowRegen
   layers:
   - Default
   - TransparentFX
@@ -17,8 +19,8 @@ TagManager:
   - Reset
   - Checkpoint
   - GravityZones
-  - 
-  - 
+  - StartTrigger
+  - GoalLayer
   - 
   - 
   - 

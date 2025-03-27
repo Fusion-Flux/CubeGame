@@ -1,6 +1,7 @@
 using Unity.Collections;
 using UnityEngine;
 using Unity.Cinemachine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,9 +13,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump Settings")]
     public float jumpForce = 7f;
-    // A customizable delay between jump triggers (in seconds)
     public float jumpTriggerDelay = 0.5f;
-    // Existing variables for jump reset on landing (if desired)
     public float groundCheckDistanceForce = 1.1f;
     public LayerMask groundLayer;
     private int jumpsLeft = 0;
@@ -31,27 +30,30 @@ public class PlayerController : MonoBehaviour
     private Vector3 prevGravityDirection = Vector3.down;
     public float gravityStrength = 9.81f;
 
+    [Header("Slam Settings")]
+    public float slamForce = 15f;
+    private bool canSlam = true;
+
     private bool canJump = false;
     private Rigidbody rb;
     private bool jumpRequested = false;
     private bool isGrounded;
-    // This cooldown is used after a jump is executed (and for resetting jumps on collision)
     public float jumpResetCooldown = 0.5f;
     private float jumpResetTimer = 0f;
     private float disableCamColider = 0f;
     private bool camColider = true;
-
-    // New timer for enforcing delay between jump triggers
     private float jumpTriggerTimer = 0f;
-
+    private bool levelComplete = false;
     public CheckPoint checkPoint;
     public CinemachineCamera virtualCamera;
-    
+
     [Header("Dynamic Jump Regen Settings")]
-    // Add any tags here in the Inspector to disallow jump regeneration when colliding with objects with these tags.
     public string[] disallowedRegenTags;
-    // Internal counter to track collisions with objects that should block jump regeneration.
+    public string[] allowRegenTags; // New array for allow regen tags
     private int disallowedRegenCollisionCount = 0;
+
+    private bool canMove = false; // New variable to control player movement
+    private float timer = 0f; // Timer to track time after starting
 
     private void Awake()
     {
@@ -60,7 +62,6 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Ensure the virtual camera is assigned
         if (virtualCamera == null)
         {
             virtualCamera = FindObjectOfType<CinemachineCamera>();
@@ -71,62 +72,102 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && !uniVals.paused && !uniVals.levelComplete)
+        if (Input.GetKeyDown(KeyCode.Escape) && !uniVals.paused && !uniVals.levelComplete && !levelComplete)
         {
             uniVals.paused = true;
             Time.timeScale = 0;
             uniVals.Paused.gameObject.SetActive(true);
+            uniVals.HUD.gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
-        else if (Input.GetKeyDown(KeyCode.Escape) && uniVals.paused && !uniVals.levelComplete)
+        else if (Input.GetKeyDown(KeyCode.Escape) && uniVals.paused && !uniVals.levelComplete && !levelComplete)
         {
             uniVals.paused = false;
             Time.timeScale = 1;
             uniVals.Paused.gameObject.SetActive(false);
+            uniVals.HUD.gameObject.SetActive(true);
             Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
-        // Update the jump trigger timer
         if (jumpTriggerTimer > 0)
         {
             jumpTriggerTimer -= Time.deltaTime;
         }
 
-        // Only allow jump input if the delay has passed
-        if (Input.GetButtonDown("Jump") && jumpsLeft > 0 && jumpTriggerTimer <= 0)
+        if (canMove)
         {
-            jumpRequested = true;
-            jumpTriggerTimer = jumpTriggerDelay;
-        }
-
-        // Dash input: press Left Shift to dash if cooldown is complete
-        if (Input.GetKeyDown(KeyCode.LeftShift) && dashTimer <= 0)
-        {
-            dashRequested = true;
-            dashTimer = dashCooldown;
-        }
-        if (dashTimer > 0)
-        {
-            dashTimer -= Time.deltaTime;
-        }
-
-        if (jumpResetTimer > 0)
-        {
-            jumpResetTimer -= Time.deltaTime;
-        }
-        if (disableCamColider >= 0)
-        {
-            disableCamColider -= Time.deltaTime;
-        }
-        if (disableCamColider < 0)
-        {
-            var colliderExtension = virtualCamera.GetComponent<CinemachineDeoccluder>();
-            if (colliderExtension != null)
+            if (Input.GetButtonDown("Jump") && jumpsLeft > 0 && jumpTriggerTimer <= 0)
             {
-                colliderExtension.enabled = true;
+                jumpRequested = true;
+                jumpTriggerTimer = jumpTriggerDelay;
             }
-            disableCamColider = 0;
+
+            if (Input.GetKeyDown(KeyCode.LeftShift) && dashTimer <= 0)
+            {
+                dashRequested = true;
+                dashTimer = dashCooldown;
+            }
+            if (dashTimer > 0)
+            {
+                dashTimer -= Time.deltaTime;
+            }
+
+            if (jumpResetTimer > 0)
+            {
+                jumpResetTimer -= Time.deltaTime;
+            }
+            if (disableCamColider >= 0)
+            {
+                disableCamColider -= Time.deltaTime;
+            }
+            if (disableCamColider < 0)
+            {
+                var colliderExtension = virtualCamera.GetComponent<CinemachineDeoccluder>();
+                if (colliderExtension != null)
+                {
+                    colliderExtension.enabled = true;
+                }
+                disableCamColider = 0;
+            }
+
+            // Update the timer
+            timer += Time.deltaTime;
+
+            // Check for slam input
+            if (Input.GetKeyDown(KeyCode.LeftControl) && canSlam)
+            {
+                Slam();
+            }
         }
+        uniVals.ActiveTimer.text = FormatTime(timer);
+    }
+
+    private void Slam()
+    {
+        // Calculate the downward direction based on gravity
+        Vector3 relativeDown = gravityDirection.normalized;
+
+        // Apply the slam force in the downward direction
+        rb.AddForce(relativeDown * slamForce, ForceMode.Impulse);
+
+        // Halve the horizontal momentum
+        Vector3 horizontalVelocity = Vector3.ProjectOnPlane(rb.velocity, relativeDown);
+        rb.velocity -= horizontalVelocity * 0.5f;
+
+        // Disable slam until grounded again
+        canSlam = false;
+    }
+
+
+    private string FormatTime(float time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+        int milliseconds = Mathf.FloorToInt((time * 100) % 100);
+
+        return string.Format("{0:00}:{1:00}:{2:00}", minutes, seconds, milliseconds);
     }
 
     private void FixedUpdate()
@@ -135,51 +176,50 @@ public class PlayerController : MonoBehaviour
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
-        // Calculate camera's forward/right relative to gravity for movement torque and force
         Vector3 forward = Vector3.ProjectOnPlane(Camera.main.transform.forward, gravityDirection).normalized;
         Vector3 right = Vector3.ProjectOnPlane(Camera.main.transform.right, gravityDirection).normalized;
         Vector3 moveDirection = (right * v + -forward * h).normalized;
 
         rb.AddTorque(moveDirection * moveTorque);
-
-        Vector3 forceDirection = (forward * v + right * h).normalized;
-        rb.AddForce(forceDirection * (IsGroundedForce() ? moveForce : airMoveForce));
-
-        if (jumpRequested)
+        if (canMove)
         {
-            Vector3 relativeUp = -gravityDirection.normalized;
-            float verticalSpeed = Vector3.Dot(rb.linearVelocity, relativeUp);
-            if (verticalSpeed < 0)
-            {
-                Vector3 downwardComponent = Vector3.Project(rb.linearVelocity, relativeUp);
-                rb.linearVelocity -= downwardComponent;
-            }
-            rb.AddForce(relativeUp * jumpForce, ForceMode.Impulse);
-            jumpRequested = false;
-            jumpsLeft--;
-            jumpResetTimer = jumpResetCooldown;
-        }
+            Vector3 forceDirection = (forward * v + right * h).normalized;
+            rb.AddForce(forceDirection * (IsGroundedForce() ? moveForce : airMoveForce));
 
-        // Modified dash logic: dash relative to movement direction while preserving vertical look
-        if (dashRequested)
-        {
-            Vector3 dashDirection;
-            if (Mathf.Abs(h) > 0.1f || Mathf.Abs(v) > 0.1f)
+            if (jumpRequested)
             {
-                // Use the camera's full forward (which includes vertical look) along with its right vector
-                dashDirection = (Camera.main.transform.forward * v + Camera.main.transform.right * h).normalized;
+                Vector3 relativeUp = -gravityDirection.normalized;
+                float verticalSpeed = Vector3.Dot(rb.linearVelocity, relativeUp);
+                if (verticalSpeed < 0)
+                {
+                    Vector3 downwardComponent = Vector3.Project(rb.linearVelocity, relativeUp);
+                    rb.linearVelocity -= downwardComponent;
+                }
+                rb.AddForce(relativeUp * jumpForce, ForceMode.Impulse);
+                jumpRequested = false;
+                jumpsLeft--;
+                canSlam = true; // Re-enable slam when jumping
+                jumpResetTimer = jumpResetCooldown;
             }
-            else
+
+            if (dashRequested)
             {
-                // Fallback dash direction (includes vertical look)
-                dashDirection = Camera.main.transform.forward.normalized;
+                Vector3 dashDirection;
+                if (Mathf.Abs(h) > 0.1f || Mathf.Abs(v) > 0.1f)
+                {
+                    dashDirection = (Camera.main.transform.forward * v + Camera.main.transform.right * h).normalized;
+                }
+                else
+                {
+                    dashDirection = Camera.main.transform.forward.normalized;
+                }
+                rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
+                dashRequested = false;
             }
-            rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
-            dashRequested = false;
         }
     }
 
-    public Transform worldUpOverrideTransform; // assign this in the Inspector
+    public Transform worldUpOverrideTransform;
 
     private void LateUpdate()
     {
@@ -202,10 +242,8 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        // Interpolate the gravity direction for a smoother camera up adjustment
         Vector3 lerpGravityDirection = Vector3.Slerp(prevGravityDirection, gravityDirection, Time.deltaTime * 5f);
         worldUpOverrideTransform.rotation = Quaternion.FromToRotation(Vector3.up, -lerpGravityDirection);
-        // Update the previous gravity direction for the next frame
         prevGravityDirection = lerpGravityDirection;
     }
 
@@ -214,20 +252,26 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(gravityDirection * gravityStrength, ForceMode.Acceleration);
     }
 
-    // Helper function to check if the collision is with an object that should block regen.
     private bool IsCollisionWithDisallowedTag(Collision collision)
     {
         foreach (string tag in disallowedRegenTags)
         {
             if (collision.gameObject.CompareTag(tag))
             {
+                // Check for allow regen tag
+                foreach (string allowTag in allowRegenTags)
+                {
+                    if (collision.gameObject.CompareTag(allowTag))
+                    {
+                        return false; // Allow regen tag overrides disallow regen tag
+                    }
+                }
                 return true;
             }
         }
         return false;
     }
 
-    // Update the counter when collisions with disallowed objects begin
     private void OnCollisionEnter(Collision collision)
     {
         if (IsCollisionWithDisallowedTag(collision))
@@ -236,7 +280,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Update the counter when collisions with disallowed objects end
     private void OnCollisionExit(Collision collision)
     {
         if (IsCollisionWithDisallowedTag(collision))
@@ -245,14 +288,16 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Only reset jump count if colliding with valid ground and not colliding with any disallowed objects.
     private void OnCollisionStay(Collision collision)
     {
         if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
         {
             isGrounded = true;
             if (jumpResetTimer <= 0 && disallowedRegenCollisionCount == 0)
+            {
                 jumpsLeft = maxJumps;
+                canSlam = true; // Re-enable slam when grounded
+            }
         }
     }
 
@@ -266,7 +311,6 @@ public class PlayerController : MonoBehaviour
         gravityDirection = newGravityDirection;
         gravityStrength = newGravityStrength;
 
-        // Optionally, adjust the camera immediately upon gravity change
         if (virtualCamera != null)
         {
             Vector3 relativeUp = -gravityDirection;
@@ -279,9 +323,21 @@ public class PlayerController : MonoBehaviour
     public LayerMask resetLayer;
     public LayerMask checkPointLayer;
     public LayerMask goalLayer;
+    public LayerMask startTriggerLayer; // Layer for the start trigger
 
     private void OnTriggerEnter(Collider other)
     {
+        if (goalLayer == (goalLayer | (1 << other.gameObject.layer)))
+        {
+            uniVals.finalScore = timer;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            uniVals.HUD.gameObject.SetActive(false);
+            uniVals.LevelComplete.gameObject.SetActive(true);
+            uniVals.FinalTimeText.text = FormatTime(timer);
+            levelComplete = true;
+            Time.timeScale = 0;
+        }
         if (checkPointLayer == (checkPointLayer | (1 << other.gameObject.layer)))
         {
             checkPoint = other.gameObject.GetComponent<CheckPoint>();
@@ -309,6 +365,28 @@ public class PlayerController : MonoBehaviour
 
             disableCamColider = 1f;
         }
+
+        // Check for collision with the start trigger layer
+        if (startTriggerLayer == (startTriggerLayer | (1 << other.gameObject.layer)))
+        {
+            canMove = true; // Enable player movement
+
+            // Check if the object has the "LevelStart" tag
+            if (other.gameObject.CompareTag("LevelStart"))
+            {
+                timer = 0f; // Start the timer
+            }
+        }
+    }
+
+    public void ResetLevel()
+    {
+        Time.timeScale = 1;
+        // Get the name of the current active scene
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        // Load the current scene to reset the level
+        SceneManager.LoadScene(currentSceneName);
     }
 
     private void OnDrawGizmos()
