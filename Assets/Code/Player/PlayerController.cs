@@ -21,9 +21,11 @@ public class PlayerController : MonoBehaviour
 
     [Header("Dash Settings")]
     public float dashForce = 20f;
-    public float dashCooldown = 1f;
-    private float dashTimer = 0f;
+    public float dashRegenTime = 1f; // Time required to regenerate one dash
+    private float dashRegenTimer = 0f;
     private bool dashRequested = false;
+    public int maxDashes = 2; // Maximum number of dashes
+    private int dashesLeft = 2; // Number of dashes available
 
     [Header("Gravity Settings")]
     public Vector3 gravityDirection = Vector3.down;
@@ -54,6 +56,9 @@ public class PlayerController : MonoBehaviour
 
     private bool canMove = false; // New variable to control player movement
     private float timer = 0f; // Timer to track time after starting
+private float groundedTimer = 0f;
+    
+    private bool disableTimer = false;
 
     private void Awake()
     {
@@ -104,14 +109,10 @@ public class PlayerController : MonoBehaviour
                 jumpTriggerTimer = jumpTriggerDelay;
             }
 
-            if (Input.GetKeyDown(KeyCode.LeftShift) && dashTimer <= 0)
+            if (Input.GetKeyDown(KeyCode.LeftShift) && dashesLeft > 0)
             {
                 dashRequested = true;
-                dashTimer = dashCooldown;
-            }
-            if (dashTimer > 0)
-            {
-                dashTimer -= Time.deltaTime;
+                dashesLeft--;
             }
 
             if (jumpResetTimer > 0)
@@ -133,7 +134,19 @@ public class PlayerController : MonoBehaviour
             }
 
             // Update the timer
-            timer += Time.deltaTime;
+            if (!disableTimer)
+            {
+                timer += Time.deltaTime;
+            }
+
+            if (groundedTimer > 0)
+            {
+                groundedTimer -= Time.deltaTime;
+            }
+            else
+            {
+                isGrounded = false;
+            }
 
             // Check for slam input
             if (Input.GetKeyDown(KeyCode.LeftControl) && canSlam)
@@ -153,13 +166,12 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(relativeDown * slamForce, ForceMode.Impulse);
 
         // Halve the horizontal momentum
-        Vector3 horizontalVelocity = Vector3.ProjectOnPlane(rb.velocity, relativeDown);
-        rb.velocity -= horizontalVelocity * 0.5f;
+        Vector3 horizontalVelocity = Vector3.ProjectOnPlane(rb.linearVelocity, relativeDown);
+        rb.linearVelocity -= horizontalVelocity * 0.5f;
 
         // Disable slam until grounded again
         canSlam = false;
     }
-
 
     private string FormatTime(float time)
     {
@@ -215,6 +227,17 @@ public class PlayerController : MonoBehaviour
                 }
                 rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
                 dashRequested = false;
+            }
+        }
+
+        // Regenerate dash over time while grounded
+        if (isGrounded && dashesLeft < maxDashes)
+        {
+            dashRegenTimer += Time.deltaTime;
+            if (dashRegenTimer >= dashRegenTime)
+            {
+                dashesLeft++;
+                dashRegenTimer = 0f;
             }
         }
     }
@@ -292,10 +315,12 @@ public class PlayerController : MonoBehaviour
     {
         if ((groundLayer & (1 << collision.gameObject.layer)) != 0)
         {
-            isGrounded = true;
+            
             if (jumpResetTimer <= 0 && disallowedRegenCollisionCount == 0)
             {
                 jumpsLeft = maxJumps;
+                isGrounded = true;
+                groundedTimer = 1;
                 canSlam = true; // Re-enable slam when grounded
             }
         }
@@ -323,10 +348,15 @@ public class PlayerController : MonoBehaviour
     public LayerMask resetLayer;
     public LayerMask checkPointLayer;
     public LayerMask goalLayer;
+    public LayerMask timerLayer;
     public LayerMask startTriggerLayer; // Layer for the start trigger
 
     private void OnTriggerEnter(Collider other)
     {
+        if (timerLayer == (timerLayer | (1 << other.gameObject.layer)))
+        {
+            disableTimer = true;
+        }
         if (goalLayer == (goalLayer | (1 << other.gameObject.layer)))
         {
             uniVals.finalScore = timer;
@@ -395,6 +425,12 @@ public class PlayerController : MonoBehaviour
         for (int i = 0; i < jumpsLeft; i++)
         {
             Gizmos.DrawSphere(transform.position + Vector3.up * (i + 1) * 0.5f, 0.25f);
+        }
+
+        Gizmos.color = Color.red;
+        for (int i = 0; i < dashesLeft; i++)
+        {
+            Gizmos.DrawSphere(transform.position + Vector3.right * (i + 1) * 0.5f, 0.25f);
         }
     }
 }
