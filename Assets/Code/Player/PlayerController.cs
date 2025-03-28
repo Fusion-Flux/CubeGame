@@ -2,6 +2,7 @@ using Unity.Collections;
 using UnityEngine;
 using Unity.Cinemachine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class PlayerController : MonoBehaviour
     public float jumpTriggerDelay = 0.5f;
     public float groundCheckDistanceForce = 1.1f;
     public LayerMask groundLayer;
-    private int jumpsLeft = 0;
+    private int jumpsLeft = 2;
     public int maxJumps = 2;
 
     [Header("Dash Settings")]
@@ -59,6 +60,11 @@ public class PlayerController : MonoBehaviour
 private float groundedTimer = 0f;
     
     private bool disableTimer = false;
+    
+    [Header("UI Elements")]
+    public Image[] dashSprites; // Array to hold dash UI images
+    public Image[] jumpSprites; // Array to hold jump UI images
+    public Image slamSprite;
 
     private void Awake()
     {
@@ -75,6 +81,13 @@ private float groundedTimer = 0f;
 
     public UniversalValues uniVals;
 
+    private void Start()
+    {
+        // Initialize dash and jump UI based on max values
+        UpdateDashUI();
+        UpdateJumpUI();
+        UpdateSlamUI();
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && !uniVals.paused && !uniVals.levelComplete && !levelComplete)
@@ -155,8 +168,54 @@ private float groundedTimer = 0f;
             }
         }
         uniVals.ActiveTimer.text = FormatTime(timer);
+        UpdateDashUI();
+        UpdateJumpUI();
+        UpdateSlamUI();
     }
 
+    
+    private void UpdateDashUI()
+    {
+        for (int i = 0; i < dashSprites.Length; i++)
+        {
+            if (i < dashesLeft)
+            {
+                dashSprites[i].enabled = true; // Show dash sprite
+            }
+            else
+            {
+                dashSprites[i].enabled = false; // Hide dash sprite
+            }
+        }
+    }
+    private void UpdateSlamUI()
+    {
+        
+            if (canSlam)
+            {
+                slamSprite.enabled = true; // Show dash sprite
+            }
+            else
+            {
+                slamSprite.enabled = false; // Hide dash sprite
+            }
+        
+    }
+
+    private void UpdateJumpUI()
+    {
+        for (int i = 0; i < jumpSprites.Length; i++)
+        {
+            if (i < jumpsLeft)
+            {
+                jumpSprites[i].enabled = true; // Show jump sprite
+            }
+            else
+            {
+                jumpSprites[i].enabled = false; // Hide jump sprite
+            }
+        }
+    }
     private void Slam()
     {
         // Calculate the downward direction based on gravity
@@ -250,6 +309,7 @@ private float groundedTimer = 0f;
         {
             if (gravityDirection != prevGravityDirection)
             {
+                
                 var colliderExtension = virtualCamera.GetComponent<CinemachineDeoccluder>();
                 if (colliderExtension != null)
                 {
@@ -320,7 +380,7 @@ private float groundedTimer = 0f;
             {
                 jumpsLeft = maxJumps;
                 isGrounded = true;
-                groundedTimer = 1;
+                groundedTimer = .5f;
                 canSlam = true; // Re-enable slam when grounded
             }
         }
