@@ -404,6 +404,10 @@ private float groundedTimer = 0f;
             virtualCamera.transform.rotation = Quaternion.LookRotation(relativeForward, relativeUp);
         }
     }
+    
+    public Vector3 GetGravity(){
+        return gravityDirection;    
+    }
 
     public LayerMask resetLayer;
     public LayerMask checkPointLayer;
@@ -453,7 +457,7 @@ private float groundedTimer = 0f;
                 colliderExtension.enabled = false;
             }
 
-            disableCamColider = 1f;
+            disableCamColider = 0f;
         }
 
         // Check for collision with the start trigger layer

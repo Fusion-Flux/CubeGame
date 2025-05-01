@@ -4,6 +4,7 @@ public class SphereGravTrigger : MonoBehaviour
 {
     public float gravityStrength = 9.81f;
     public bool inverted = false;
+
     private void OnTriggerStay(Collider other)
     {
         // Check if the object entering the trigger is the player
@@ -14,7 +15,10 @@ public class SphereGravTrigger : MonoBehaviour
             if (inverted)
                 difference = -difference;
             // Apply the gravity data to the player
-            playerController.SetGravity(-difference.normalized, gravityStrength);
+            if (playerController.GetGravity() != -difference.normalized)
+            {
+                playerController.SetGravity(-difference.normalized, gravityStrength);
+            }
         }
     }
 }

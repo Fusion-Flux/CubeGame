@@ -12,7 +12,10 @@ public class GravityTrigger : MonoBehaviour
         if (playerController != null)
         {
             // Apply the gravity data to the player
-            playerController.SetGravity(gravityDirection, gravityStrength);
+            if (playerController.GetGravity() != gravityDirection)
+            {
+                playerController.SetGravity(gravityDirection, gravityStrength);
+            }
         }
     }
 }
